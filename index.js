@@ -1,6 +1,7 @@
 const express   = require('express'),
       app       = express(),
       User      = require('./models/user'),
+      Permission = require('./models/permission'),
       mongoose  = require('mongoose')
 
 mongoose.set('useFindAndModify', false);
@@ -107,6 +108,15 @@ USER MODEL:
     PUT /claim/id - Edit permission by id
     DELETE /claim/id - Delete permission by id
 
+
+TODO: Data validation
+
+    Of course, there is the need to validate and sanitize the data provided by the user.
+    I'll do that with Joi and Jet.
+
+    Joi - A feature-complete data validation library on npm.
+    Jet - A slim, fast data sanitizing suite for Node. (authored by me)
+
 */
 
 let userReturned;
@@ -118,7 +128,9 @@ function listUsers(){
 }
 
 function listPermissions(){
-
+    Permission.find({}, (err, permissions) => {
+        err ? console.log(err) : listed = users;
+    })
 }
 
 function verifyIfExisting(username){
@@ -205,15 +217,114 @@ app.get('/user/:id', (req, res) => {
 app.put('/user/:id/:parameter/:value', (req, res) => {
     let param = req.params.parameter
     let value = req.params.value
-    User.findOneAndUpdate({_id: req.params.id}, {parameter: value}, (err, user) => {
-        err ? console.log(err) : res.send('User edited successfully.<br><br>' + user)
+
+    switch (param) {
+        case 'username':
+            User.findOneAndUpdate({_id: req.params.id}, {username: value}, (err, user) => {
+                err ? console.log(err) : res.send('User edited successfully.' + user)
+            })
+        break;
+
+        case 'age':
+            User.findOneAndUpdate({_id: req.params.id}, {age: value}, (err, user) => {
+                err ? console.log(err) : res.send('User edited successfully.' + user)
+            })
+        break;
+
+        case 'permission':
+            //TODO: handle permission edits
+        break;
+
+        default:
+        break;
+    }
+})
+
+app.post('/user/:id/claim/:pname', (req, res) => {
+    let list = []
+
+    Permission.find({name: req.params.pname}, (err, permission) => {
+        list.push(permission)
+        User.findOneAndUpdate({_id: req.params.id}, {permissions: list}, (err, user) => {
+            err ? console.log(err) : res.send("User edited. Added new permissions.")
+        })
     })
 })
 
+
+
 app.delete('/user/:id', (req ,res) => {
     User.findOneAndUpdate({_id: req.params.id}, {hidden: true}, (err, user) => {
-        err ? console.log(err) : res.send('User deleted successfully.<br><br>' + user)
+        err ? console.log(err) : res.send('User deleted successfully.')
     })
+})
+
+
+//Permission routes
+
+app.get('/claim', (req, res) => {
+    Permission.find({hidden: false}, (err, permissions) => {
+        err ? console.log(err) : res.send(permissions);
+    })
+})
+
+app.post('/claim/:name/:description', (req, res) => {
+    try{
+        Permission.find({name: req.params.name, hidden: false}, (err, permission) => {
+            if(!permission[0]){
+                Permission.create({
+                    name: req.params.name,
+                    description: req.params.description,
+                    hidden: false
+                }, function(err, permission){
+                if(err){
+                    console.log(err);
+                } else{
+                    console.log("Permission created successfully!")
+                    Permission.find({name: req.params.name}, (err, permission) => {
+                        err ? console.log(err) : res.send(permission);
+                    });
+                };
+                });
+            } else{
+                res.send("Permission name already exists in database!")
+            }
+        })
+    } catch(err){
+        console.log(err)
+    }
+})
+
+app.delete('/claim/:id', (req, res) => {
+    Permission.findOneAndUpdate({_id: req.params.id}, {hidden: true}, (err, permission) => {
+        err ? console.log(err) : res.send('Permission deleted successfully.')
+    })
+})
+
+app.put('/user/:id/:parameter/:value', (req, res) => {
+    let param = req.params.parameter
+    let value = req.params.value
+
+    switch (param) {
+        case 'name':
+            User.findOneAndUpdate({_id: req.params.id}, {name: value}, (err, permission) => {
+                err ? console.log(err) : res.send('Permission edited successfully.' + permission)
+            })
+        break;
+
+        case 'description':
+            User.findOneAndUpdate({_id: req.params.id}, {description: value}, (err, permission) => {
+                err ? console.log(err) : res.send('Permission edited successfully.' + permission)
+            })
+        break;
+
+        case 'permission':
+            //TODO: handle permission edits
+        break;
+
+        default:
+        break;
+    }
 })
 
 app.listen(3000, () => {
