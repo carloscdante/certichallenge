@@ -23,6 +23,9 @@ mongoose.connect("mongodb://localhost/certichallenge", { useNewUrlParser: true, 
     Auth:
         None. It was not required.
 
+    Standard:
+        REST Api implemented exactly as requested, with some modifications to fit the database decision.
+
 */
 
 //TODO: User model
@@ -167,10 +170,6 @@ app.put('/user/:id/:parameter/:value', (req, res) => {
             })
         break;
 
-        case 'permission':
-            //TODO: handle permission edits
-        break;
-
         default:
         break;
     }
@@ -183,7 +182,9 @@ app.post('/user/:id/claim/:pname', (req, res) => {
         list.push(permission)
         User.find({_id: req.params.id}, (err, user) => {
             let previous = user[0]['permissions'].toObject()
-            list.push(previous)
+            if(previous[0] !== undefined){
+                list.push(previous)
+            }
         User.findOneAndUpdate({_id: req.params.id}, {permissions: list}, (err, user) => {
             err ? console.log(err) : res.send("User edited. Added new permissions.")
         })
@@ -191,14 +192,11 @@ app.post('/user/:id/claim/:pname', (req, res) => {
     })
 })
 
-
-
 app.delete('/user/:id', (req ,res) => {
     User.findOneAndUpdate({_id: req.params.id}, {hidden: true}, (err, user) => {
         err ? console.log(err) : res.send('User deleted successfully.')
     })
 })
-
 
 //Permission routes
 
@@ -256,10 +254,6 @@ app.put('/claim/:id/:parameter/:value', (req, res) => {
             User.findOneAndUpdate({_id: req.params.id}, {description: value}, (err, permission) => {
                 err ? console.log(err) : res.send('Permission edited successfully.' + permission)
             })
-        break;
-
-        case 'permission':
-            //TODO: handle permission edits
         break;
 
         default:
