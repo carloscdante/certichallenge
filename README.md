@@ -1,3 +1,3 @@
-# Boilerplate
+# Certi challenge
 
-### This is a boilerplate for node.js projects. Everytime I start a new project I clone this repo.
+### This is the internship challenge for CERTI. It is an implementation of a REST api to manage users and permissions.
