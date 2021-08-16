@@ -110,31 +110,6 @@ USER MODEL:
 
 */
 
-let userReturned;
-
-function listUsers(){
-    User.find({}, (err, users) => {
-        err ? console.log(err) : listed = users;
-    })
-}
-
-function listPermissions(){
-    Permission.find({}, (err, permissions) => {
-        err ? console.log(err) : listed = users;
-    })
-}
-
-function verifyIfExisting(username){
-    User.find({username: req.params.username}, (err, user) => {
-        if(err){
-            return false
-        } else{
-            return true
-        }
-    })
-    return false;
-}
-
 app.post('/user/:username/:age', (req, res) => {
     try{
         User.find({username: req.params.username, hidden: false}, (err, user) => {
