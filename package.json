@@ -1,7 +1,7 @@
 {
-  "name": "boilerplate",
+  "name": "certichallenge",
   "version": "1.0.0",
-  "description": "boilerplate for node projects",
+  "description": "certi challenge",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"

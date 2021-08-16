@@ -15,6 +15,9 @@ mongoose.connect("mongodb://localhost/certichallenge", { useNewUrlParser: true, 
         it is essential to prototype fast,
         and noSQL is the best solution for that.
 
+        I started with postgres with sequelize
+        but changed to MongoDB w/mongoose about halfway through.
+
         It's like Python, where if you want to hack
         something together fast it's a really good tool.
 
