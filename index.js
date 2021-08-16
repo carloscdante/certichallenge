@@ -135,36 +135,6 @@ function verifyIfExisting(username){
     return false;
 }
 
-function createUser(req, res){
-    console.log(verifyIfExisting(req.params.username))
-    if(verifyIfExisting(req.params.username) != true){
-        User.create({
-            age: req.params.age,
-            username: req.params.username,
-            permissions: [],
-            hidden: false
-        }, function(err, user){
-        if(err){
-            console.log(err);
-        } else{
-            console.log("User created successfully!")
-            User.find({username: req.params.username}, (err, user) => {
-                err ? console.log(err) : res.send(user);
-            });
-        };
-        });
-    } else{
-        throw { 
-            name:        "Username already exists", 
-            level:       "Harmless", 
-            message:     "This username is already registered onto the database. Please choose another.", 
-            htmlMessage: "<h4>This username is already registered onto the database. Please choose another.</h4>",
-            toString:    function(){return this.name + ": " + this.message;} 
-        }; 
-    }
-}
-
-
 app.post('/user/:username/:age', (req, res) => {
     try{
         User.find({username: req.params.username, hidden: false}, (err, user) => {
