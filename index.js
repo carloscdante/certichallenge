@@ -12,7 +12,7 @@ mongoose.connect("mongodb://localhost/certichallenge", { useNewUrlParser: true, 
     Stack:
         Node.js, express, mongoDB w/mongoose
         to make a minimum viable product faster
-        it's essential to prototype faster,
+        it is essential to prototype fast,
         and noSQL is the best solution for that.
 
         It's like Python, where if you want to hack
@@ -107,15 +107,6 @@ USER MODEL:
     GET /claim/id - Get permission by id
     PUT /claim/id - Edit permission by id
     DELETE /claim/id - Delete permission by id
-
-
-TODO: Data validation
-
-    Of course, there is the need to validate and sanitize the data provided by the user.
-    I'll do that with Joi and Jet.
-
-    Joi - A feature-complete data validation library on npm.
-    Jet - A slim, fast data sanitizing suite for Node. (authored by me)
 
 */
 
@@ -245,9 +236,13 @@ app.post('/user/:id/claim/:pname', (req, res) => {
 
     Permission.find({name: req.params.pname}, (err, permission) => {
         list.push(permission)
+        User.find({_id: req.params.id}, (err, user) => {
+            let previous = user[0]['permissions'].toObject()
+            list.push(previous)
         User.findOneAndUpdate({_id: req.params.id}, {permissions: list}, (err, user) => {
             err ? console.log(err) : res.send("User edited. Added new permissions.")
         })
+     })
     })
 })
 
@@ -301,7 +296,7 @@ app.delete('/claim/:id', (req, res) => {
     })
 })
 
-app.put('/user/:id/:parameter/:value', (req, res) => {
+app.put('/claim/:id/:parameter/:value', (req, res) => {
     let param = req.params.parameter
     let value = req.params.value
 
