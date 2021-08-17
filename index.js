@@ -257,13 +257,13 @@ app.put('/claim/:id/:parameter/:value', (req, res) => {
 
     switch (param) {
         case 'name':
-            User.findOneAndUpdate({_id: req.params.id}, {name: value}, (err, permission) => {
+            Permission.findOneAndUpdate({_id: req.params.id}, {name: value}, (err, permission) => {
                 err ? console.log(err) : res.send('Permission edited successfully.' + permission)
             })
         break;
 
         case 'description':
-            User.findOneAndUpdate({_id: req.params.id}, {description: value}, (err, permission) => {
+            Permission.findOneAndUpdate({_id: req.params.id}, {description: value}, (err, permission) => {
                 err ? console.log(err) : res.send('Permission edited successfully.' + permission)
             })
         break;
