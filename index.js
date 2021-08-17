@@ -179,16 +179,20 @@ app.put('/user/:id/:parameter/:value', (req, res) => {
 })
 
 app.post('/user/:id/claim/:pname', (req, res) => {
-    let list = []
-
     Permission.find({name: req.params.pname}, (err, permission) => {
-        list.push(permission)
+        let list = []
         User.find({_id: req.params.id}, (err, user) => {
+            list.push(permission)
             let previous = user[0]['permissions'].toObject()
             if(previous[0] !== undefined){
-                list.push(previous)
+                previous.forEach(element => {
+                    list.push(element)
+                });
             }
-        User.findOneAndUpdate({_id: req.params.id}, {permissions: list}, (err, user) => {
+        let stringified = list.map(JSON.stringify)
+        let stringArray = Array.from(new Set(stringified))
+        let unique = Array.from(stringArray, JSON.parse)
+        User.findOneAndUpdate({_id: req.params.id}, {permissions: unique}, (err, user) => {
             err ? console.log(err) : res.send("User edited. Added new permissions.")
         })
      })
