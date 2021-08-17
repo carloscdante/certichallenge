@@ -189,8 +189,13 @@ app.post('/user/:id/claim/:pname', (req, res) => {
                     list.push(element)
                 });
             }
+        // This prevents duplicate permissions by stringifying
+        // the list array and parsing it as JSON
+        // (because sets only account for primitive values such as strings).
         let stringified = list.map(JSON.stringify)
+        // Creates a new set from the array of strings
         let stringArray = Array.from(new Set(stringified))
+        // Then, parses the JSON onto a unique set.
         let unique = Array.from(stringArray, JSON.parse)
         User.findOneAndUpdate({_id: req.params.id}, {permissions: unique}, (err, user) => {
             err ? console.log(err) : res.send("User edited. Added new permissions.")
